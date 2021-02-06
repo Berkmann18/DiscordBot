@@ -1,7 +1,7 @@
 output "FIP" {
   description = "Floating IP of the instance"
   value       = digitalocean_floating_ip.fip.ip_address
-  sensitive = true # var.redact_info
+  sensitive   = true # var.redact_info
 }
 
 output "Status" {
@@ -13,7 +13,7 @@ output "Tags" {
 }
 
 output "IPv4" {
-  value = digitalocean_droplet.discordbot.ipv4_address
+  value     = digitalocean_droplet.discordbot.ipv4_address
   sensitive = true # var.redact_info
 }
 

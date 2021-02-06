@@ -62,10 +62,10 @@
 #   }
 # }
 resource "digitalocean_droplet" "discordbot" {
-  image = "ubuntu-20-04-x64"
-  name = var.project
-  region = var.region
-  size = "s-1vcpu-1gb"
+  image              = "ubuntu-20-04-x64"
+  name               = var.project
+  region             = var.region
+  size               = "s-1vcpu-1gb"
   private_networking = true
   # backups = true
   monitoring = true
@@ -74,12 +74,14 @@ resource "digitalocean_droplet" "discordbot" {
   ]
 
   connection {
-    host = self.ipv4_address
-    user = "root"
-    type = "ssh"
+    host        = self.ipv4_address
+    user        = "root"
+    type        = "ssh"
     private_key = file(var.pvt_key)
-    timeout = "2m"
+    timeout     = "2m"
   }
+
+  user_data = "#cloud-config\npackage_update: true\npackage_upgrade: true"
 
   provisioner "remote-exec" {
     inline = [
@@ -89,16 +91,17 @@ resource "digitalocean_droplet" "discordbot" {
       "npm i -g pm2",
       "git clone https://github.com/Berkmann18/DiscordBot.git",
       "cd DiscordBot && npm i",
+      "echo -e 'BOT_TOKEN=${var.BOT_TOKEN}\nROLEID=${var.ROLEID}\nCHANNELID=${var.CHANNELID}\nACCESSKEY=${var.ACCESSKEY}\nSECRETKEY=${var.SECRETKEY}\nINSTANCE=${var.INSTANCE}\nMESSAGELOGGING=${var.MESSAGELOGGING}' > .env",
       "pm2 start src/bot.js" # "npm start"
     ]
   }
 
-  tags = [ "DiscordBot", "MineServ" ]
+  tags = ["DiscordBot", "MineServ"]
 }
 
 resource "digitalocean_floating_ip" "fip" {
   droplet_id = digitalocean_droplet.discordbot.id
-  region = digitalocean_droplet.discordbot.region
+  region     = digitalocean_droplet.discordbot.region
   # droplet_id = digitalocean_app.discordbot.id
   # region     = var.region
 }
