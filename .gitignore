@@ -100,3 +100,4 @@ terraform/.terraform
 terraform/tf-plan
 terraform/terraform.tfstate*
 *.pem
+terraform/connect.sh
