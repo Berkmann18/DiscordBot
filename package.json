@@ -1,0 +1,63 @@
+{
+  "name": "discordbot",
+  "version": "0.1.0",
+  "description": "Manages AWS instances",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "lint:js": "eslint -c .eslintrc.js *.js src/*.js test/*.js --fix",
+    "lint:md": "remark . .github",
+    "lint": "npm run lint:js && npm run lint:md",
+    "fmt": "prettier --write *.js {src,test}/*.js",
+    "develop": "nodemon src/bot.js"
+  },
+  "author": "James Matchett",
+  "license": "MIT",
+  "dependencies": {
+    "aws-cli-js": "^2.0.2",
+    "body-parser": "^1.19.0",
+    "conventional-changelog-eslint": "^3.0.1",
+    "cz-adapter-eslint": "^0.3.0",
+    "dotenv": "^8.2.0",
+    "eris": "^0.14.0",
+    "eslint": "^7.0.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-security": "^1.4.0",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.5.0",
+    "express": "^4.17.1",
+    "husky": "^4.0.0",
+    "lint-staged": "^10.5.4",
+    "options": "0.0.6",
+    "prettier": "^2.0.3",
+    "remark-cli": "^9.0.0",
+    "remark-preset-lint-consistent": "^4.0.0",
+    "remark-preset-lint-recommended": "^5.0.0",
+    "test-console": "^1.1.0"
+  },
+  "engines": {
+    "node": ">= 7.0.0",
+    "npm": ">= 4.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-adapter-eslint"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint -c .eslintrc.js --fix"
+    ],
+    "*.md": [
+      "remark"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
