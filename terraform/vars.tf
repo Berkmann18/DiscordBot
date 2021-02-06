@@ -10,6 +10,10 @@ variable "region" {
   default     = "lon1"
 }
 
+variable "aws_region" {
+  default     = "eu-west-2"
+}
+
 variable "allowed_cidrs" {
   description = "CIDR allowlist"
 }

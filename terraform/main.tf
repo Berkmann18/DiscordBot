@@ -1,66 +1,3 @@
-# resource "digitalocean_app" "discordbot" {
-#   spec {
-#     name   = var.project
-#     region = "fra" #var.region
-#     domain {
-#       name = "berkmc.xyz"
-#     }
-
-#     env {
-#       key   = "BOT_TOKEN"
-#       value = var.BOT_TOKEN
-#       type  = "SECRET"
-#     }
-
-#     env {
-#       key   = "ROLEID"
-#       value = var.ROLEID
-#       type  = "SECRET"
-#     }
-
-#     env {
-#       key   = "CHANNELID"
-#       value = var.CHANNELID
-#       type  = "SECRET"
-#     }
-
-#     env {
-#       key   = "ACCESSKEY"
-#       value = var.ACCESSKEY
-#       type  = "SECRET"
-#     }
-
-#     env {
-#       key   = "SECRETKEY"
-#       value = var.SECRETKEY
-#       type  = "SECRET"
-#     }
-
-#     env {
-#       key   = "INSTANCE"
-#       value = var.INSTANCE
-#       type  = "SECRET"
-#     }
-
-#     env {
-#       key   = "MESSAGELOGGING"
-#       value = var.MESSAGELOGGING
-#       type  = "SECRET"
-#     }
-
-#     service {
-#       name               = "bot-service" #?
-#       # environment_slug   = "nodejs"      #?
-#       instance_count     = 1
-#       instance_size_slug = "basic-xs" #?
-
-#       git {
-#         repo_clone_url = "https://github.com/Berkmann18/DiscordBot.git"
-#         branch         = "master"
-#       }
-#     }
-#   }
-# }
 resource "digitalocean_droplet" "discordbot" {
   image              = "ubuntu-20-04-x64"
   name               = var.project
@@ -87,12 +24,17 @@ resource "digitalocean_droplet" "discordbot" {
     inline = [
       "export PATH=$PATH:/usr/bin",
       "sudo apt-get update",
-      "sudo apt-get -y install git npm",
+      "sudo apt-get -y install git nodejs npm awscli",
       "npm i -g pm2",
       "git clone https://github.com/Berkmann18/DiscordBot.git",
       "cd DiscordBot && npm i",
-      "echo -e 'BOT_TOKEN=${var.BOT_TOKEN}\nROLEID=${var.ROLEID}\nCHANNELID=${var.CHANNELID}\nACCESSKEY=${var.ACCESSKEY}\nSECRETKEY=${var.SECRETKEY}\nINSTANCE=${var.INSTANCE}\nMESSAGELOGGING=${var.MESSAGELOGGING}' > .env",
-      "pm2 start src/bot.js" # "npm start"
+      "aws --profile default configure set aws_access_key_id '${var.ACCESSKEY}'",
+      "aws --profile default configure set aws_secret_access_key '${var.SECRETKEY}'",
+      "aws --profile default configure set region ${var.aws_region}",
+      "aws --profile default configure set output json",
+      "echo 'BOT_TOKEN=${var.BOT_TOKEN}\nROLEID=${var.ROLEID}\nCHANNELID=${var.CHANNELID}\nACCESSKEY=${var.ACCESSKEY}\nSECRETKEY=${var.SECRETKEY}\nINSTANCE=${var.INSTANCE}\nMESSAGELOGGING=${var.MESSAGELOGGING}' > .env",
+      "pm2 start src/bot.js", # "npm start"
+      "pm2 startup systemd"
     ]
   }
 
@@ -150,5 +92,3 @@ resource "digitalocean_firewall" "gate" {
     destination_addresses = ["0.0.0.0/0", "::/0"]
   }
 }
-
-# Maybe consider using digitalocean_app instead? https://registry.terraform.io/providers/digitalocean/digitalocean/latest/docs/resources/app
